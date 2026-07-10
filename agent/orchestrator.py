@@ -88,6 +88,39 @@ def run_domain(domain, out_root=None):
 
     # 3. Reverse-engineer
     re_result = reverse_engineer.reverse_engineer(careers_url, fp, llm, trace)
+
+    # Deterministic guard: if discovery verified a country-scoped India listing page, reverse-engineering
+    # must not silently swap the scrape target to a GLOBAL unfiltered list (URL-slug prefilters and facet
+    # probes can both legitimately fail on global lists, silently yielding zero India jobs). Only overrides
+    # after re-verifying the India page still shows job links right now. Generic -- runs for every domain.
+    if disc.get("india_page_preferred") and re_result.get("source_type") in ("html_ssr", "rendered_list_ssr_detail"):
+        _epu = (re_result.get("endpoint_url") or "").lower()
+        if "india" not in _epu:
+            from . import tools as _tools
+            _raw = _tools.http_get(careers_url)
+            _n = reverse_engineer._count_job_links(_raw.get("text", "")) if _raw.get("ok") else 0
+            if _n >= 3:
+                re_result["endpoint_url"] = careers_url
+                re_result["source_type"] = "html_ssr"
+                re_result["requires_js_execution"] = False
+                re_result.setdefault("evidence", []).append(
+                    f"Endpoint overridden back to discovery's verified India page {careers_url} "
+                    f"({_n} job links in raw HTML) -- reverse-engineering had drifted to a global list.")
+                trace.decision("reverse_engineer", "india_endpoint_guard",
+                                evidence=[f"{_n} job links on {careers_url}; global endpoint replaced"])
+            else:
+                _rendered = _tools.firecrawl_scrape_interactive(careers_url, scroll_times=3)
+                _links = [l for l in (_rendered.get("links") or []) if "/job" in l.lower()]
+                if len(_links) >= 3:
+                    re_result["endpoint_url"] = careers_url
+                    re_result["source_type"] = "rendered_list_ssr_detail"
+                    re_result["requires_js_execution"] = True
+                    re_result.setdefault("evidence", []).append(
+                        f"Endpoint overridden back to discovery's verified India page {careers_url} "
+                        f"({len(_links)} job links after rendering) -- reverse-engineering had drifted to a global list.")
+                    trace.decision("reverse_engineer", "india_endpoint_guard",
+                                    evidence=[f"{len(_links)} rendered job links on {careers_url}; global endpoint replaced"])
+
     if re_result.get("source_type") == "not_found":
         return _finish_no_script(domain, out_dir, trace, cost, disc, fingerprint_result=fp, re_result=re_result,
                                   reason="Careers page found but no extractable job data source could be identified.")

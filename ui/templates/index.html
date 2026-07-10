@@ -257,9 +257,10 @@
 </div>
 
 <script>
-const STAGES = ["discovery","fingerprint","reverse_engineer","architect","codegen","validate","repair"];
+const STAGES = ["discovery","fingerprint","reverse_engineer","architect","codegen","validate","repair","linkedin_enrichment"];
 const STAGE_LABEL = {discovery:"Discover", fingerprint:"Fingerprint", reverse_engineer:"Reverse-engineer",
-                     architect:"Architect", codegen:"Codegen", validate:"Validate", repair:"Repair"};
+                     architect:"Architect", codegen:"Codegen", validate:"Validate", repair:"Repair",
+                     linkedin_enrichment:"LinkedIn"};
 const DL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
 
 let domain = null, timer = null, renderedEvents = 0;
@@ -353,8 +354,6 @@ async function poll() {
   const took = data.elapsed_sec != null ? `took ${fmtSec(data.elapsed_sec)}` : "";
   if (status === "success") {
     banner("success", `Success — ${r.job_count} India job${r.job_count === 1 ? "" : "s"} extracted from ${domain} (confidence ${r.confidence_pct}%)`, false, took);
-    renderJobs(data.jobs);
-    renderLinkedIn(data.linkedin_jobs, r.linkedin_company_guess);
   } else if (status === "success_empty") {
     banner("empty", `Valid run, zero India jobs — the scraper works but ${domain} currently lists no India roles (${(r.validation_reasons||[]).join("; ") || "empty output"})`, false, took);
   } else if (status === "no_script_generated") {
@@ -362,6 +361,10 @@ async function poll() {
   } else {
     banner("fail", `Failed after ${r.repair_attempts_used ?? 0} repair attempts — ${(r.validation_reasons||[]).join("; ") || "see trace"}`, false, took);
   }
+  // These render for EVERY finished outcome -- e.g. a success_empty run can still have LinkedIn
+  // results, and the generated scraper code is a deliverable even when the site has zero India jobs.
+  renderJobs(data.jobs);
+  renderLinkedIn(data.linkedin_jobs, r.linkedin_company_guess);
   renderStats(r);
   renderDownloads(data.files);
   renderCode(data.scraper_code, r.needs_firecrawl_key);

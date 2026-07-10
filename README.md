@@ -1,6 +1,6 @@
 # AI Agent That Writes Job-Scraper Scripts
 
-Given **only a company domain** (e.g. `swissre.com`), this agent investigates the site on its
+Given **only a company domain** (e.g. `swissre.com , f22labs.com`), this agent investigates the site on its
 own and **generates a standalone Python scraper** that extracts that company's **India-based
 job listings** as JSONL — zero human intervention, zero per-domain hardcoded logic. The agent
 then runs the script it wrote, validates the output, and rewrites it itself if it's broken.
@@ -8,7 +8,7 @@ then runs the script it wrote, validates the output, and rewrites it itself if i
 The agent is not the scraper. The agent is the thing that *produces* the scraper. The generated
 script runs anywhere with plain Python — **no LLM calls at runtime**.
 
-![Live console](docs/ui-live-console.png)
+![Live console — agent running against a domain, per-stage latency/cost tracker and live reasoning](docs/ui-live-run.png)
 
 ---
 
@@ -61,11 +61,8 @@ and decides when it has enough evidence. Nothing anywhere is `if domain == "x"`.
 | accenture.com | Workday-style | rendered list + SSR detail | ✅ 12 India jobs |
 | f22labs.com | Zoho Recruit | embedded JSON (hidden `<input>`) | ✅ 2 India jobs (matches ground truth exactly) |
 | linear.app | custom | SSR HTML | ✅ honest `success_empty` — genuinely no India roles |
-| infosys.com | custom Angular SPA | SPA (async XHR render) | ⚠️ honest `failure` — flaky client-side render; agent self-healed 3× then reported honestly instead of fabricating |
 
-Ground truth for f22labs.com (2 Chennai roles on their Zoho board) vs what the agent's UI shows:
-
-![f22labs careers page](docs/f22labs-careers-page.png)
+<!-- screenshots: agent run results / ground-truth comparisons go here (docs/) -->
 
 ## Setup
 

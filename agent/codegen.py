@@ -425,6 +425,11 @@ _HTTP_TWO_STAGE_RULES = """15. HTTP-ONLY TWO-STAGE SCRAPER (SSR list + SSR detai
     "hyderabad", "pune", "chennai", "kolkata", "gurgaon", "gurugram", "noida", "ahmedabad" -- plain substring
     checks on the URL path, many career sites embed the city as a path segment like /en/job/<city>/...), and
     fetch only those. Log to stderr how many were skipped by this prefilter. Cap pagination at ~120 pages.
+    CRITICAL prefilter safety valve: if the prefilter matches ZERO URLs, that does NOT mean there are no
+    India jobs -- it means this site's job URLs simply don't embed the city in the path. In that case do NOT
+    write an empty output; instead fetch detail pages WITHOUT the prefilter, capped at the first ~120 URLs
+    (log to stderr that the URL prefilter was inapplicable and a capped unfiltered pass is running), and rely
+    on the per-page structural location check to keep only India jobs.
 """
 
 

@@ -1,0 +1,48 @@
+{
+  "domain": "cognizant.com",
+  "overall_status": "success",
+  "confidence_pct": 40.6,
+  "careers_url": "https://careers.cognizant.com/india-en/jobs/",
+  "platform": "custom",
+  "platform_confidence_pct": 0.96,
+  "platform_evidence": [
+    "No known ATS substring hits were detected in the page signals.",
+    "No frontend framework hits were detected.",
+    "No hydration blobs were found, suggesting this is not a typical SPA/ATS widget shell.",
+    "The URL structure and content are branded as Cognizant Careers with many localized paths under careers.cognizant.com, indicating a company-owned careers site rather than a third-party ATS domain.",
+    "Sample links include internal job detail pages and paginated results on the same domain (e.g. /india-en/jobs/00069634682/... and /india-en/jobs/?page=2#results), which is consistent with a custom careers implementation."
+  ],
+  "source_type": "html_ssr",
+  "pagination_scheme": "page_number",
+  "needs_firecrawl_key": false,
+  "reverse_engineer_evidence": [
+    "fetch_raw https://careers.cognizant.com/india-en/jobs/ returned full HTML with job-detail links in the raw page source, including /india-en/jobs/00069634682/uipath-engineer-agentic/ and /india-en/jobs/?page=2#results",
+    "fetch_raw https://careers.cognizant.com/india-en/jobs/?page=2#results returned a server-rendered page shell with page-specific title '... - Page 2'",
+    "sitemap.xml exists and includes the India jobs landing page plus other regional jobs landing pages",
+    "The site is a custom Cognizant careers portal on the company domain, not a known ATS, and no JS hydration/API was needed to see job links"
+  ],
+  "job_count": 5,
+  "validation_checks": {
+    "json_valid": true,
+    "output_file_exists": true,
+    "schema_complete": true,
+    "location_shape_ok": true,
+    "all_jobs_india": true,
+    "no_duplicates": true,
+    "urls_absolute": true,
+    "titles_mostly_present": true
+  },
+  "validation_reasons": [],
+  "repair_attempts_used": 1,
+  "linkedin_company_guess": "Cognizant",
+  "linkedin_job_count": 3,
+  "cost_report": {
+    "llm_calls": 14,
+    "input_tokens": 138036,
+    "output_tokens": 8298,
+    "cost_usd": 0.42807,
+    "tool_calls": 15,
+    "repair_retries": 1,
+    "wall_clock_sec": 416.98
+  }
+}
