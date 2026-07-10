@@ -63,6 +63,7 @@ and decides when it has enough evidence. Nothing anywhere is `if domain == "x"`.
 | munichre.com | Radancy | SSR HTML + verified India facet | ✅ 4 India jobs |
 | accenture.com | Workday-style | rendered list + SSR detail | ✅ 12 India jobs |
 | f22labs.com | Zoho Recruit | embedded JSON (hidden `<input>`) | ✅ 2 India jobs (matches ground truth exactly) |
+| nielseniq.com | custom (WordPress REST) | REST API + India taxonomy facet | ✅ 48 India jobs |
 | linear.app | custom | SSR HTML | ✅ honest `success_empty`, genuinely no India roles |
 
 ### Working result: cognizant.com, end to end

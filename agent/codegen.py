@@ -356,11 +356,27 @@ _DETAIL_EXTRACTION_RULES = """18. DETAIL-PAGE FIELD EXTRACTION (use the REAL det
       only use a guessed class as a last resort if the structural scan also returns None. This applies to
       BOTH list-card location extraction and detail-page location extraction -- anywhere resolve_location is
       called on a piece of extracted text.
-    - INDIA FILTER (MANDATORY, even when the list URL is already India-filtered server-side): after resolving
-      the location, include this exact guard before appending the job:
-      `if country_code != "IN": continue`
-      A job whose location could not be resolved (country_code is None) must be SKIPPED, not written with
-      nulls -- unverifiable-location jobs are not India jobs.
+    - INDIA FILTER -- two cases, pick the right one based on the reverse-engineer evidence:
+      (a) DEFAULT (HTML scraping, or an endpoint that is NOT India-scoped): after resolving the location,
+          include this exact guard before appending the job:
+          `if country_code != "IN": continue`
+          A job whose location could not be resolved (country_code is None) must be SKIPPED, not written with
+          nulls -- for an unfiltered source, unverifiable-location jobs are not India jobs.
+      (b) VERIFIED INDIA-SCOPED ENDPOINT (source_type rest_api/graphql/embedded_json whose endpoint_url or
+          request params/body were verified in reverse-engineering to filter server-side to India -- e.g. a
+          location/facet id, `?location=india`, `job_locations=<india term id>`, a country=IN body field):
+          then EVERY record the endpoint returns is an India role BY CONSTRUCTION. Do NOT re-derive country
+          from fragile page/content HTML and then DROP records that fail to parse -- that double-filtering is
+          exactly what silently writes ZERO jobs when the endpoint already returned dozens. Instead:
+            * set `country, country_code = "India", "IN"` unconditionally for every returned record;
+            * still extract `city`/`state` best-effort from STRUCTURED fields first -- an embedded taxonomy
+              (e.g. WordPress `_embedded."wp:term"` entries whose `taxonomy` names a location, skipping the
+              country term itself), an explicit location/city field on the record, or JSON-LD -- and only fall
+              back to parsing a content string (which may be slash-separated "Country / State / City", not
+              comma-separated) if no structured field exists;
+            * leave city/state `null` when genuinely absent, but NEVER drop the record for a null city.
+          Only skip a record here if a structured location field positively proves it is NOT India (a
+          non-India country on the record itself).
     - job_description: pick the LARGEST main body text block by iterating the candidate sections/blocks (e.g.
       all `.richtext` / article sections), measuring `len(el.get_text())`, and choosing the max -- explicitly
       SKIP any block whose text starts with a short label like "Location:". Never reuse the location element

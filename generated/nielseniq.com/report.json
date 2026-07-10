@@ -1,0 +1,48 @@
+{
+  "domain": "nielseniq.com",
+  "overall_status": "success",
+  "confidence_pct": 97.0,
+  "careers_url": "https://nielseniq.com/global/en/jobs/?s=&market=global&language=en&orderby=&order=&post_type=career_job&job_locations=india&job_teams=&job_types=",
+  "platform": "custom",
+  "platform_confidence_pct": 0.91,
+  "platform_evidence": [
+    "The careers URL is on nielseniq.com and the sample links are all NIQ corporate site pages, not a hosted ATS domain.",
+    "The only ATS-related signal is a substring hit for \"smartrecruiters.com\", but no actual SmartRecruiters careers/apply links or embedded SmartRecruiters widgets are shown in the sample links or markdown preview.",
+    "No hydration blobs or frontend framework signals indicate a known ATS frontend.",
+    "The page content preview looks like a WordPress-style corporate careers page with internal navigation, suggesting the careers listing may be custom-rendered or proxying jobs data rather than being a direct ATS-hosted careers site."
+  ],
+  "source_type": "rest_api",
+  "pagination_scheme": "page_number",
+  "needs_firecrawl_key": false,
+  "reverse_engineer_evidence": [
+    "Raw HTML contained SSR job cards with individual job-detail links and hidden filter inputs for job_locations=india.",
+    "WordPress VIP headers and Link header exposed wp-json endpoint for job_locations term 14549.",
+    "Verified India term JSON: https://nielseniq.com/wp-json/wp/v2/job_locations/14549 returns count 48 and link https://nielseniq.com/global/en/jobs/india/.",
+    "Verified job list API: https://nielseniq.com/wp-json/wp/v2/career_job?job_locations=14549&per_page=1&page=1 returns real job records with full content.description in content.rendered.",
+    "Verified pagination via X-WP-TotalPages=48 and next Link header to page=2.",
+    "Verified SSR detail pages at https://nielseniq.com/global/en/jobs/research-analyst-2/ and https://nielseniq.com/global/en/jobs/research-associate/."
+  ],
+  "job_count": 48,
+  "validation_checks": {
+    "json_valid": true,
+    "output_file_exists": true,
+    "schema_complete": true,
+    "all_jobs_india": true,
+    "no_duplicates": true,
+    "urls_absolute": true,
+    "titles_present": true
+  },
+  "validation_reasons": [],
+  "repair_attempts_used": 0,
+  "linkedin_company_guess": "Nielseniq",
+  "linkedin_job_count": 0,
+  "cost_report": {
+    "llm_calls": 20,
+    "input_tokens": 179422,
+    "output_tokens": 6048,
+    "cost_usd": 0.50904,
+    "tool_calls": 16,
+    "repair_retries": 0,
+    "wall_clock_sec": 163.31
+  }
+}
