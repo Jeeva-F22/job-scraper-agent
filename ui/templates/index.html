@@ -225,6 +225,15 @@
     </table></div>
   </section>
 
+  <section id="linkedinsec" class="hidden">
+    <h2>Cross-platform — LinkedIn (bonus)</h2>
+    <p class="hint" style="margin-bottom:10px" id="linkedinhint"></p>
+    <div class="tablebox"><table id="linkedintable">
+      <thead><tr><th>Title</th><th>Location</th><th>Posted</th><th>Type</th><th>Link</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
   <section id="codesec" class="hidden">
     <h2>Generated scraper — the actual deliverable</h2>
     <p class="hint" style="margin-bottom:10px">Standalone Python. No agent, no LLM calls at runtime. Anyone can run this on any machine and get the JSONL output.</p>
@@ -288,7 +297,7 @@ function resetView() {
   $("stats").innerHTML = "";
   $("downloads").innerHTML = "";
   $("codetext").textContent = "";
-  ["jobsec","dlsec","statsec","codesec"].forEach(id => $(id).classList.add("hidden"));
+  ["jobsec","dlsec","statsec","codesec","linkedinsec"].forEach(id => $(id).classList.add("hidden"));
   ["stagesec","timesec"].forEach(id => $(id).classList.remove("hidden"));
   $("stages").innerHTML = STAGES.map(s => `<span class="chip" id="chip-${s}">${STAGE_LABEL[s]}</span>`).join("");
 }
@@ -345,6 +354,7 @@ async function poll() {
   if (status === "success") {
     banner("success", `Success — ${r.job_count} India job${r.job_count === 1 ? "" : "s"} extracted from ${domain} (confidence ${r.confidence_pct}%)`, false, took);
     renderJobs(data.jobs);
+    renderLinkedIn(data.linkedin_jobs, r.linkedin_company_guess);
   } else if (status === "success_empty") {
     banner("empty", `Valid run, zero India jobs — the scraper works but ${domain} currently lists no India roles (${(r.validation_reasons||[]).join("; ") || "empty output"})`, false, took);
   } else if (status === "no_script_generated") {
@@ -456,6 +466,29 @@ function renderJobs(jobs) {
     tbody.appendChild(tr);
   });
   $("jobsec").classList.remove("hidden");
+}
+
+function renderLinkedIn(jobs, companyGuess) {
+  if (!jobs) return;
+  $("linkedinhint").textContent = jobs.length
+    ? `Sourced via SerpAPI's Google Jobs index for "${companyGuess}" -- never scrapes linkedin.com directly. Deterministic, no LLM calls.`
+    : `No India postings currently surfaced on LinkedIn for "${companyGuess}" via Google Jobs (query ran; genuinely zero this time, not an error).`;
+  const tbody = $("linkedintable").querySelector("tbody");
+  tbody.innerHTML = "";
+  jobs.forEach(j => {
+    const tr = document.createElement("tr");
+    const loc = j.location || {};
+    const locStr = [loc.city, loc.state, loc.country].filter(Boolean).join(", ") || "—";
+    tr.innerHTML = `<td></td><td></td><td></td><td></td><td></td>`;
+    tr.children[0].textContent = j.title || "—";
+    tr.children[1].textContent = locStr;
+    tr.children[2].textContent = j.date_posted || j.date_posted_text || "—";
+    tr.children[3].textContent = j.employment_type || "—";
+    if (j.url) { const a = document.createElement("a"); a.href = j.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = "open"; tr.children[4].appendChild(a); }
+    else tr.children[4].textContent = "—";
+    tbody.appendChild(tr);
+  });
+  $("linkedinsec").classList.remove("hidden");
 }
 
 function renderStats(r) {

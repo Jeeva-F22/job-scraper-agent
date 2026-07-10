@@ -32,3 +32,4 @@
 {"type": "stage", "stage": "validate", "detail": "Validating generated scraper output", "step": 32, "ts": 1783653312.3446012}
 {"type": "decision", "stage": "validate", "decision": "success", "evidence": [], "confidence": 100.0, "step": 33, "ts": 1783653312.3446012}
 {"type": "stage", "stage": "run_end", "detail": "success", "step": 34, "ts": 1783653312.3515973}
+{"type": "decision", "stage": "linkedin_enrichment", "decision": "2 India LinkedIn job(s) for 'Razorpay'", "evidence": ["query company name guess: Razorpay"], "confidence": null, "step": 1, "ts": 1783664753.1478555}

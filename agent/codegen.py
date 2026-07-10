@@ -103,6 +103,16 @@ Hard requirements:
 5. Output schema (one JSON object per line, JSONL, UTF-8):
 """ + OUTPUT_SCHEMA_DOC + """
 6. Pagination must fully traverse all pages per the plan's exact stop condition -- do not stop at page 1.
+   MANDATORY UNIVERSAL TERMINATION RULE (applies no matter the source_type or pagination_scheme): a page/
+   response is "done" when it contributes ZERO records not already in your dedupe/seen set -- NEVER rely on
+   "response was empty" alone as the stop condition. Many real sources (a misfiring page param, a source
+   that ignores pagination entirely, an API that clamps to page 1 for any page number) return the SAME
+   non-empty content for every page number forever; an emptiness-only check will then loop until the page
+   cap and the sandbox/timeout kills the run. Concretely: track a `seen` set of dedupe keys across the whole
+   run, and after processing each page compute `new_count = number of this page's records whose dedupe key
+   was NOT already in seen`; if `new_count == 0`, stop pagination immediately (do not just skip -- break the
+   loop). This applies equally to JSON-API pagination, embedded-JSON pages with a page/offset param, and
+   rendered/scrolled pages.
 7. Deduplicate on the plan's dedupe_key (job_id or url) before writing output -- never emit the same job twice.
 8. Normalize all URLs to absolute form using `urllib.parse.urljoin` (stdlib, not regex).
 9. Dates: try `datetime.fromisoformat` / documented API date formats via `datetime.strptime` with EXPLICIT

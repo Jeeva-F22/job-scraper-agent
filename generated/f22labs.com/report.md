@@ -1,31 +1,36 @@
 # Scraper report -- f22labs.com
 
-**Status:** `success_empty`
+**Status:** `success`
 **Confidence:** 40.6%
 
 - Careers URL: https://f22labs.com/careers/india
 - Platform: zoho_recruit (0.99% confidence)
-- Source type: html_ssr
-- Pagination: none
-- India jobs found: 0
+- Source type: embedded_json
+- Pagination: page_number
+- India jobs found: 2
 - Repair attempts used: 0
 
 ## Evidence
-- ✓ Job links point to the company’s Zoho Recruit subdomain: https://f22labs.zohorecruit.in/jobs/Careers/...
-- ✓ Markdown preview includes a visible “Powered by” link to https://www.zoho.in/recruit
-- ✓ Company logo and career assets are loaded from f22labs.zohorecruit.in/recruit/viewCareerImage.do
-- ✓ Zoho Recruit-style template placeholders are present, such as {{getI18n(...)}} and {{record.Posting_Title}}
-- ✓ The page structure includes Zoho Recruit career-site paths like /jobs/Careers and /jobs/Careers#top
-- ✓ Raw GET of https://f22labs.com/careers/india returned 200 after redirecting to https://f22labs.zohorecruit.in/jobs/Careers, confirming the actual underlying list host/path.
-- ✓ The no-JS careers HTML/markdown contains individual Zoho Recruit job-detail links, including /jobs/Careers/65449000002129032/Senior-Project-Manager?source=CareerSite and /jobs/Careers/65449000000416161/Product-Management-Intern?source=CareerSite, so the list is server-side scrapeable and should not be classified as browser-only.
-- ✓ Raw GET of the Senior Project Manager detail URL returned 200 with title/meta content: <title>F22Labs - Senior Project Manager in Chennai</title> and description text beginning 'F22Labs Who we are: F22 Labs was started in 2014...', confirming detail pages are also SSR/plain HTML.
-- ✓ Raw GET of the Product Management Intern detail URL returned 200 with title/meta content: <title>F22Labs - Product Management Intern in Chennai</title>, again confirming SSR job details.
-- ✓ https://f22labs.zohorecruit.in/sitemap.xml redirected to Zoho Accounts sign-in/IAM security error, so sitemap is not a public listing source here.
+- ✓ Direct ATS domain links point to f22labs.zohorecruit.in/jobs/Careers/...
+- ✓ Page includes explicit Zoho Recruit branding: 'Powered by' -> https://www.zoho.in/recruit
+- ✓ Known Zoho Recruit substrings were detected: 'zohorecruit.in' and 'zoho.in/recruit'
+- ✓ Markdown preview shows Zoho Recruit job detail and application template variables like {{record.Posting_Title}}, {{candidate.Email}}, and {{topMessage}}
+- ✓ Company logo is served from a Zoho Recruit asset path: /recruit/viewCareerImage.do?page_id=...
+- ✓ Sample links include Zoho Recruit careers endpoints and share/apply-related Zoho-generated URLs
+- ✓ fetch_raw https://f22labs.zohorecruit.in/jobs/Careers returned server HTML with job-detail links and embedded hidden_input:jobs JSON
+- ✓ extract_hydration_json found hidden_input:jobs and hidden_input:meta blobs
+- ✓ sample job record includes full Job_Description and City=Chennai
+- ✓ job detail URLs are direct Zoho Recruit links and are SSR
 
 ## Validation
 - json_valid: ✓
 - output_file_exists: ✓
-- note: zero jobs written
+- schema_complete: ✓
+- location_shape_ok: ✓
+- all_jobs_india: ✓
+- no_duplicates: ✓
+- urls_absolute: ✓
+- titles_mostly_present: ✓
 
 ## How to run the generated scraper standalone (no agent, no LLM)
 ```bash
@@ -34,11 +39,17 @@ python generated/f22labs.com/scraper.py out.jsonl
 ```
 Produces `out.jsonl` (one India job per line). Runs anywhere with Python + `pip install requests beautifulsoup4 lxml`.
 
+## Cross-platform: LinkedIn (bonus)
+- Company name used for query: F22labs
+- India job postings found on LinkedIn: 1
+- See `linkedin_jobs.jsonl`. Sourced via SerpAPI's Google Jobs index -- never scrapes linkedin.com directly. Deterministic, no LLM calls.
+- Rerun standalone: `python -m agent.linkedin_jobs "F22labs" linkedin_jobs.jsonl`
+
 ## Cost report
-- LLM calls: 10
-- Tool calls: 14
-- Input tokens: 68725
-- Output tokens: 15383
+- LLM calls: 11
+- Tool calls: 11
+- Input tokens: 66291
+- Output tokens: 4987
 - Repair retries: 0
-- Estimated cost: $0.32564
-- Wall clock: 530.76s
+- Estimated cost: $0.2156
+- Wall clock: 119.3s

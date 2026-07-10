@@ -39,5 +39,7 @@
     "tool_calls": 7,
     "repair_retries": 0,
     "wall_clock_sec": 58.06
-  }
+  },
+  "linkedin_company_guess": "Razorpay",
+  "linkedin_job_count": 2
 }

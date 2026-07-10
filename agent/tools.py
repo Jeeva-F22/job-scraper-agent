@@ -26,7 +26,11 @@ def http_get(url, headers=None, timeout=_TIMEOUT):
             "status": r.status_code,
             "url": r.url,
             "headers": dict(r.headers),
-            "text": r.text[:200_000],
+            # Full, untruncated text -- deterministic Python-side scanners (hidden-input/hydration JSON
+            # search, facet probes, job-link counting) need the whole page; some real pages (e.g. Zoho
+            # Recruit) put the actual job data well past 200K chars. LLM-facing truncation happens
+            # separately and later, in llm._shape_tool_result_for_llm, so it's safe to not cap here.
+            "text": r.text,
             "is_json": "application/json" in r.headers.get("content-type", ""),
         }
     except requests.RequestException as e:

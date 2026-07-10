@@ -1,47 +1,50 @@
 # Scraper report -- infosys.com
 
 **Status:** `success_empty`
-**Confidence:** 40.4%
+**Confidence:** 40.6%
 
-- Careers URL: https://career.infosys.com/joblist?countrycode=IN&companyhiringtype=IL
-- Platform: custom (0.82% confidence)
-- Source type: spa_needs_browser
-- Pagination: load_more
+- Careers URL: https://career.infosys.com/joblist?companyhiringtype=BPM&countrycode=IN
+- Platform: custom (0.98% confidence)
+- Source type: html_ssr
+- Pagination: page_number
 - India jobs found: 0
-- Repair attempts used: 1
+- Repair attempts used: 0
 
 ## Evidence
-- ✓ No known ATS/platform substring hits were detected in the collected signals.
-- ✓ Careers site is hosted on Infosys-owned domain/path: career.infosys.com/joblist, with first-party routes such as /login, /register, and /offerValidation rather than Greenhouse/Lever/Workday/Ashby-style URLs.
-- ✓ Frontend framework signal shows Angular via ng-version.
-- ✓ No recognizable ATS hydration blobs were found.
-- ✓ Markdown preview shows a branded Infosys job search/listing experience with custom UI labels such as 'Validate and Accept Offer', 'Get a head start by uploading your resume', and 'Hot Jobs in All Locations'.
-- ✓ Actual job listings appear in the fetched preview, but the structure does not match common hosted ATS patterns.
-- ✓ Raw GET of https://career.infosys.com/joblist?countrycode=IN&companyhiringtype=IL returned the Angular application shell with scripts (runtime.js/scripts.js/main.js) and no usable individual job-detail links in the raw HTML.
-- ✓ Rendered fetch of the same URL produced actual job rows in the page markdown, e.g. location/company 'BANGALORE, Infosys Limited', title 'Senior Technologist MEAN/MERN- Q2 FY 26', experience 'Work Experience of 9 Years to 15 Years', and full description text; another rendered row was 'Workday FI Consultant'.
-- ✓ Hydration extraction found no __NEXT_DATA__/__NUXT__/initial state blobs.
-- ✓ The environment config was verified at https://career.infosys.com/assets/environments/environment.json and exposes JobsUnAuthUrl = https://intapgateway.infosysapps.com/careersci/search/intapjbsrch/, but guessed candidate endpoints getJobList, getHotJobs, jobs, and getAllJobs all returned 404 JSON errors, so no verified REST job-list endpoint was identified within the budget.
-- ✓ Rendered page links list did not expose job-detail URLs, only login/register/offerValidation/fraud-alert/# and javascript void links.
+- ✓ Domain and branding are Infosys-specific: career.infosys.com, Infosys logo, and job content references Infosys BPM Limited.
+- ✓ No known ATS substring hits were reported in platform_signal_hits.
+- ✓ The page exposes Angular via ng-version, indicating a custom Angular frontend rather than a recognizable ATS template.
+- ✓ Sample links are first-party app routes (/login, /register, /offerValidation) instead of standard ATS-hosted job/apply URLs.
+- ✓ Markdown preview shows a bespoke job listing experience with filters, location chips, and inline job cards, consistent with a custom careers portal.
+- ✓ Raw HTML for the careers URL contains job card text directly, including titles and locations.
+- ✓ fetch_rendered shows the same job cards without needing interactive JS.
+- ✓ No hydration JSON blobs were found.
+- ✓ No verified API endpoint was discovered.
+- ✓ The page is a custom Angular frontend, but the job list content is present in server HTML, so browser execution is not required for scraping the list.
 
 ## Validation
 - json_valid: ✓
 - output_file_exists: ✓
-- note: zero jobs written; script stderr: Warning: Firecrawl returned no rendered Infosys job-list HTML; direct page is reachable but contains only the Angular shell. Writing empty output.
-
+- note: zero jobs written
 
 ## How to run the generated scraper standalone (no agent, no LLM)
 ```bash
-# this site needs JS/bot-protection rendering, so set your Firecrawl key first:
-set FIRECRAWL_API_KEY=fc-...        # Windows (Linux/Mac: export FIRECRAWL_API_KEY=fc-...)
+# no API key needed -- this scraper uses a direct API / plain HTTP
 python generated/infosys.com/scraper.py out.jsonl
 ```
 Produces `out.jsonl` (one India job per line). Runs anywhere with Python + `pip install requests beautifulsoup4 lxml`.
 
+## Cross-platform: LinkedIn (bonus)
+- Company name used for query: Infosys
+- India job postings found on LinkedIn: 2
+- See `linkedin_jobs.jsonl`. Sourced via SerpAPI's Google Jobs index -- never scrapes linkedin.com directly. Deterministic, no LLM calls.
+- Rerun standalone: `python -m agent.linkedin_jobs "Infosys" linkedin_jobs.jsonl`
+
 ## Cost report
-- LLM calls: 33
-- Tool calls: 60
-- Input tokens: 421896
-- Output tokens: 27688
-- Repair retries: 1
-- Estimated cost: $1.33162
-- Wall clock: 1410.2s
+- LLM calls: 16
+- Tool calls: 14
+- Input tokens: 84659
+- Output tokens: 3975
+- Repair retries: 0
+- Estimated cost: $0.2514
+- Wall clock: 80.27s

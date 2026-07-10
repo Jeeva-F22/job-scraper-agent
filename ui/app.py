@@ -24,7 +24,7 @@ app = Flask(__name__)
 _runs = {}          # domain -> {"thread": Thread, "status": "running"|"done"|"error", "error": str|None}
 _runs_lock = threading.Lock()
 
-_ALLOWED_FILES = {"scraper.py", "output.jsonl", "trace.jsonl", "report.md", "report.json"}
+_ALLOWED_FILES = {"scraper.py", "output.jsonl", "trace.jsonl", "report.md", "report.json", "linkedin_jobs.jsonl"}
 
 
 def _normalize_domain(raw):
@@ -229,6 +229,21 @@ def api_status(domain):
                     except json.JSONDecodeError:
                         continue
 
+    linkedin_jobs = []
+    if report:
+        li_path = os.path.join(_out_dir(domain), "linkedin_jobs.jsonl")
+        if os.path.exists(li_path):
+            with open(li_path, encoding="utf-8", errors="replace") as f:
+                for i, line in enumerate(f):
+                    if i >= 50:
+                        break
+                    try:
+                        j = json.loads(line)
+                        j.pop("job_description", None)
+                        linkedin_jobs.append(j)
+                    except json.JSONDecodeError:
+                        continue
+
     files = []
     if os.path.isdir(_out_dir(domain)):
         files = [n for n in _ALLOWED_FILES if os.path.exists(os.path.join(_out_dir(domain), n))]
@@ -264,6 +279,7 @@ def api_status(domain):
         "stage_stats": stages,
         "report": report,
         "jobs": jobs,
+        "linkedin_jobs": linkedin_jobs,
         "files": files,
         "scraper_code": scraper_code,
     })

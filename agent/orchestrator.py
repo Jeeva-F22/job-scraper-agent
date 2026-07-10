@@ -18,10 +18,50 @@ import time
 from dotenv import load_dotenv
 
 from . import discovery, fingerprint, reverse_engineer, architect, codegen, sandbox, validator, repair, memory
+from . import linkedin_jobs
 from .trace import Trace
 from .llm import LLM, CostTracker
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _guess_company_name(domain, fp):
+    """Best-effort company display name for the LinkedIn query -- generic for every domain, never a
+    per-domain lookup table. Prefers the page title captured during fingerprinting (real signal), falls
+    back to a deterministic domain->name transform (strip TLD, title-case)."""
+    _NOISE_WORDS = ("careers", "career", "jobs", "job", "hiring", "join us", "welcome to")
+
+    def _strip_noise(text):
+        words = text.split()
+        while words and words[-1].lower() in _NOISE_WORDS:
+            words.pop()
+        return " ".join(words).strip()
+
+    preview = ((fp or {}).get("_raw_signals") or {}).get("markdown_preview") or ""
+    first_line = preview.strip().split("\n", 1)[0].strip()
+    for sep in (" | ", " - ", " — "):
+        if sep in first_line:
+            candidate = _strip_noise(first_line.split(sep)[0].strip())
+            if 2 <= len(candidate) <= 60:
+                return candidate
+    base = domain.split(".")[0]
+    return " ".join(w.capitalize() for w in base.replace("-", " ").replace("_", " ").split())
+
+
+def _try_linkedin_enrichment(domain, fp, out_dir, trace):
+    """Bonus cross-platform layer: this company's India job postings as they appear on LinkedIn
+    (via SerpAPI's Google Jobs index, no LinkedIn scraping). Deterministic, no LLM calls. Wrapped so
+    any failure here (SerpAPI down, no key, no matches) never breaks the core scraper deliverable."""
+    company = _guess_company_name(domain, fp)
+    try:
+        records = linkedin_jobs.fetch(company)
+        linkedin_jobs.write_jsonl(os.path.join(out_dir, "linkedin_jobs.jsonl"), records)
+        trace.decision("linkedin_enrichment", f"{len(records)} India LinkedIn job(s) for '{company}'",
+                        evidence=[f"query company name guess: {company}"])
+        return len(records), company
+    except Exception as e:
+        trace.error("linkedin_enrichment", f"skipped: {e}")
+        return None, company
 
 
 def run_domain(domain, out_root=None):
@@ -85,7 +125,11 @@ def run_domain(domain, out_root=None):
     if validate_result["outcome"] == "success" and validate_result["job_count"] > 0:
         memory.record_success(fp.get("platform"), domain, plan, code, validate_result, cost.as_dict())
 
-    report = _write_report(domain, out_dir, disc, fp, re_result, plan, validate_result, cost, attempt)
+    # 9. LinkedIn cross-platform enrichment (bonus, never blocks the core deliverable)
+    linkedin_count, linkedin_company = _try_linkedin_enrichment(domain, fp, out_dir, trace)
+
+    report = _write_report(domain, out_dir, disc, fp, re_result, plan, validate_result, cost, attempt,
+                            linkedin_count=linkedin_count, linkedin_company=linkedin_company)
     trace.stage("run_end", report["overall_status"])
     trace.close()
     return report
@@ -109,7 +153,8 @@ def _finish_no_script(domain, out_dir, trace, cost, disc, fingerprint_result=Non
     return report
 
 
-def _write_report(domain, out_dir, disc, fp, re_result, plan, validate_result, cost, repair_attempts):
+def _write_report(domain, out_dir, disc, fp, re_result, plan, validate_result, cost, repair_attempts,
+                   linkedin_count=None, linkedin_company=None):
     status = validate_result["outcome"]  # success | success_empty | failure
     confidence = round(
         (fp.get("confidence", 0) * 0.3 + re_result.get("confidence", 0) * 0.3 + validate_result["score"] * 100 * 0.4), 1
@@ -131,6 +176,8 @@ def _write_report(domain, out_dir, disc, fp, re_result, plan, validate_result, c
         "validation_checks": validate_result["checks"],
         "validation_reasons": validate_result["reasons"],
         "repair_attempts_used": repair_attempts,
+        "linkedin_company_guess": linkedin_company,
+        "linkedin_job_count": linkedin_count,
         "cost_report": cost.as_dict(),
     }
     with open(os.path.join(out_dir, "report.json"), "w", encoding="utf-8") as f:
@@ -176,7 +223,20 @@ def _write_report_md(out_dir, report):
             "```",
             "Produces `out.jsonl` (one India job per line). Runs anywhere with Python + "
             "`pip install requests beautifulsoup4 lxml`.",
+            "",
+            "## Cross-platform: LinkedIn (bonus)",
         ]
+        if report.get("linkedin_job_count") is not None:
+            lines += [
+                f"- Company name used for query: {report.get('linkedin_company_guess')}",
+                f"- India job postings found on LinkedIn: {report.get('linkedin_job_count')}",
+                f"- See `linkedin_jobs.jsonl`. Sourced via SerpAPI's Google Jobs index -- "
+                "never scrapes linkedin.com directly. Deterministic, no LLM calls.",
+                f"- Rerun standalone: `python -m agent.linkedin_jobs \"{report.get('linkedin_company_guess')}\" "
+                "linkedin_jobs.jsonl`",
+            ]
+        else:
+            lines += ["- Skipped (SerpAPI unavailable or no key) -- see trace.jsonl for details."]
     cr = report["cost_report"]
     lines += [
         "",

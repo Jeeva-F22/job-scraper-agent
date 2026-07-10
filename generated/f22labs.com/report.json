@@ -1,0 +1,49 @@
+{
+  "domain": "f22labs.com",
+  "overall_status": "success",
+  "confidence_pct": 40.6,
+  "careers_url": "https://f22labs.com/careers/india",
+  "platform": "zoho_recruit",
+  "platform_confidence_pct": 0.99,
+  "platform_evidence": [
+    "Direct ATS domain links point to f22labs.zohorecruit.in/jobs/Careers/...",
+    "Page includes explicit Zoho Recruit branding: 'Powered by' -> https://www.zoho.in/recruit",
+    "Known Zoho Recruit substrings were detected: 'zohorecruit.in' and 'zoho.in/recruit'",
+    "Markdown preview shows Zoho Recruit job detail and application template variables like {{record.Posting_Title}}, {{candidate.Email}}, and {{topMessage}}",
+    "Company logo is served from a Zoho Recruit asset path: /recruit/viewCareerImage.do?page_id=...",
+    "Sample links include Zoho Recruit careers endpoints and share/apply-related Zoho-generated URLs"
+  ],
+  "source_type": "embedded_json",
+  "pagination_scheme": "page_number",
+  "needs_firecrawl_key": false,
+  "reverse_engineer_evidence": [
+    "fetch_raw https://f22labs.zohorecruit.in/jobs/Careers returned server HTML with job-detail links and embedded hidden_input:jobs JSON",
+    "extract_hydration_json found hidden_input:jobs and hidden_input:meta blobs",
+    "sample job record includes full Job_Description and City=Chennai",
+    "job detail URLs are direct Zoho Recruit links and are SSR"
+  ],
+  "job_count": 2,
+  "validation_checks": {
+    "json_valid": true,
+    "output_file_exists": true,
+    "schema_complete": true,
+    "location_shape_ok": true,
+    "all_jobs_india": true,
+    "no_duplicates": true,
+    "urls_absolute": true,
+    "titles_mostly_present": true
+  },
+  "validation_reasons": [],
+  "repair_attempts_used": 0,
+  "linkedin_company_guess": "F22labs",
+  "linkedin_job_count": 1,
+  "cost_report": {
+    "llm_calls": 11,
+    "input_tokens": 66291,
+    "output_tokens": 4987,
+    "cost_usd": 0.2156,
+    "tool_calls": 11,
+    "repair_retries": 0,
+    "wall_clock_sec": 119.3
+  }
+}
