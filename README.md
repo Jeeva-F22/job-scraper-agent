@@ -78,6 +78,13 @@ calls, 138K tokens in / 8.3K out, $0.43, 417 seconds wall clock.
 
 ![Working result: cognizant.com run with extracted India jobs table and run stats](docs/cognizant-run-result.png)
 
+Below: the extracted India jobs from the company's own careers page and, right under them, the
+LinkedIn cross-platform bonus results for the same company, each row with a working link
+(`open`) to the live posting. The generated `scraper.py` deliverable sits directly beneath,
+ready to copy or download and run standalone on any machine.
+
+![Extracted India jobs and LinkedIn cross-platform results with working links, plus the generated scraper deliverable](docs/cognizant-jobs-and-linkedin.png)
+
 ## Setup
 
 ```bash
