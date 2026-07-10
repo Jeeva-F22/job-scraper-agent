@@ -1,0 +1,90 @@
+# Problem Statement: AI Agent That Writes Job-Scraper Scripts
+
+## 1. Overview
+
+Companies post jobs on many different platforms (Workday, Greenhouse, SuccessFactors, Eightfold, custom sites, etc.) with no universal API.
+
+Build an **AI agent whose job is to write code** — not to scrape jobs itself. Given only a company **domain** (no careers URL, no other input), the agent must investigate the site and **generate a standalone scraper script** that extracts that company's **India-based** job listings, with **zero human intervention**.
+
+The agent is not the scraper. The agent is the thing that *produces* the scraper. Once generated, the script must run on its own (no LLM calls at runtime) and output the jobs.
+
+---
+
+## 2. Core Problem
+
+Given only a domain (e.g. `swissre.com`), the agent must, unattended, produce a working scraper script for that domain:
+
+1. **Discover** the real careers page/API.
+2. **Investigate** the data source — SSR HTML, embedded JSON, REST/GraphQL API, or SPA — and determine the pagination scheme (offset, cursor, page number, infinite scroll) so every page of results is covered.
+3. **Write a scraper script** that extracts and filters India jobs from that source (server-side filtering preferred) and outputs them as JSONL.
+4. **Verify** the script actually works — run it, sanity-check job count, required fields, correct location — and **self-correct** (rewrite/patch the script) if the output looks wrong.
+5. **Generalize** — given a brand-new domain, repeat the same process from scratch with no new code or human intervention.
+
+The agent writes the scraper. No hand-written per-site logic.
+
+---
+
+## 3. Non-Negotiable Constraints
+
+| # | Rule |
+|---|------|
+| 1 | Agentic, not a fixed pipeline — decisions about the scraper it writes (which endpoint, which selectors, which pagination approach) are made by the LLM at runtime, zero human intervention end to end. |
+| 2 | No per-domain hardcoded logic written (`if domain === "x"`, human-written selector lookup tables, etc.) — only the agent may write site-specific code, at runtime, per domain. |
+| 3 | The agent must verify the script it generates actually works (e.g. by running it) and self-heal/rewrite it on failure — not hand over untested code. |
+| 4 | No regex for field extraction, in agent-generated code. CSS selectors / JSON paths / structured data only. |
+| 5 | Missing fields → `null` in the scraper's output. Never hallucinated or inferred from prose. |
+| 6 | Every agent run must produce a reasoning/action trace, not just the final script. |
+
+---
+
+## 4. Required Approach
+
+Deliverable is an AI agent that writes code. Given only a domain, it must investigate the site and generate a standalone scraper script that extracts India-based job listings — with no human help and no per-domain code written in advance.
+
+Internal design — framework, tools, reasoning structure, and the language/stack the generated scraper is written in — is entirely up to you.
+
+---
+
+## 5. Output Format
+
+The generated scraper script, when run independently (without the agent), must produce a **JSONL file** (one job per line), where each line is a JSON object matching this schema (`null` if not structurally available — never inferred):
+
+| Field | Notes |
+|---|---|
+| `title` | |
+| `job_id` | Stable requisition ID |
+| `location` → `city`, `state`, `country`, `country_code` | Derived via string ops, not regex |
+| `url` / `apply_url` | |
+| `date_posted` / `date_posted_text` | Typed parsing, not regex |
+| `job_description` | Full text, single field/selector |
+| `employment_type`, `work_type`, `salary_range` | Structural only |
+
+---
+
+## 6. Deliverables
+
+1. **Agent code** — takes a company domain as input, investigates the site, and generates a standalone scraper script for that domain's careers page (India jobs only).
+2. **Trace file** — the agent's full process: its reasoning, every tool call it made, and each tool call's input/output, while generating the script.
+3. **Generated scraper script** — runnable independently of the agent; when run, outputs a JSONL file where each line is a job matching the schema in §5.
+
+---
+
+## 7. Tech Stack
+
+No restrictions. Teams may use any programming language, framework, library, or tool available to you.
+
+---
+
+## 8. LLM & Tooling Access
+
+- **LLM access**: [freellmapi](https://github.com/tashfeenahmed/freellmapi) — a generous free-tier LLM API. Run it yourself locally, or use a shared instance with keys already configured (available on request).
+- **Web search**: [SerpAPI](https://serpapi.com/) gives free 250 searches, [Serper](https://serper.dev/) provides 2500 searches and [Firecrawl](https://www.firecrawl.dev/) provide 100 credits , useful for careers-page discovery and page fetching/rendering.
+
+---
+
+## 9. Stretch Goals
+
+- Cross-run memory of learned platform patterns (without becoming a hidden hardcoded branch).
+- Per-field confidence scoring; flag low-confidence results.
+- One adversarial (bot-protected/malformed) test domain — grade honest failure over hanging or fabricating.
+- Token/tool-call cost report per domain.

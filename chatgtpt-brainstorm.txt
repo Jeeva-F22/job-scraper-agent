@@ -1,0 +1,728 @@
+He's testing whether you think like an AI Systems Engineer.
+
+What everyone else will build
+
+90% of candidates will do something like
+
+Input domain
+      ↓
+Search careers page
+      ↓
+LLM writes scraper
+      ↓
+Run scraper
+      ↓
+Done
+
+Maybe they'll use LangGraph or CrewAI.
+
+Maybe ReAct.
+
+Maybe Browser Use.
+
+Maybe Firecrawl.
+
+Maybe Playwright.
+
+Almost everyone will look similar.
+
+What will impress the CEO
+
+Don't build
+
+AI Agent
+
+Build
+
+Autonomous Software Engineer that specializes in Job Scrapers.
+
+Huge difference.
+
+The LLM should feel like it is literally hiring itself as a scraping engineer.
+
+I'd build it as a Software Engineering Loop
+
+Instead of
+
+Search
+↓
+
+Generate Code
+↓
+
+Done
+
+do
+
+Understand Problem
+↓
+
+Discover Website
+
+↓
+
+Reverse Engineer Website
+
+↓
+
+Plan Scraper
+
+↓
+
+Generate Scraper
+
+↓
+
+Run Scraper
+
+↓
+
+Validate Output
+
+↓
+
+Detect Problems
+
+↓
+
+Repair Code
+
+↓
+
+Run Again
+
+↓
+
+Confidence Score
+
+↓
+
+Ship Script
+
+Notice something?
+
+There is no "LLM writes code once".
+
+The LLM behaves like a software engineer.
+
+That alone makes your project different.
+
+Even better...
+
+I'd split it into specialized agents.
+
+Not CrewAI.
+
+Not 10 agents.
+
+Just logical workers.
+
+Discovery Agent
+
+↓
+
+Platform Detection Agent
+
+↓
+
+API Reverse Engineering Agent
+
+↓
+
+Scraper Architect
+
+↓
+
+Code Generator
+
+↓
+
+Execution Agent
+
+↓
+
+Validator
+
+↓
+
+Repair Agent
+
+↓
+
+Confidence Agent
+
+This looks WAY more mature.
+
+The CEO will LOVE this
+
+Instead of simply saying
+
+Platform = Workday
+
+Have your agent produce
+
+Platform Guess
+
+Workday
+
+Confidence:
+96%
+
+Evidence
+
+✓ /wday/cxs endpoint found
+
+✓ Workday JS bundle detected
+
+✓ Workday JSON schema matched
+
+✓ Cursor pagination found
+
+✓ Jobs API returned expected schema
+
+That's engineer thinking.
+
+Not ChatGPT thinking.
+
+Don't just discover careers page.
+
+Discover EVERYTHING.
+
+For example
+
+swissre.com
+
+↓
+
+Careers page
+
+↓
+
+robots.txt
+
+↓
+
+sitemap.xml
+
+↓
+
+JS bundles
+
+↓
+
+XHR Requests
+
+↓
+
+Network Calls
+
+↓
+
+Embedded JSON
+
+↓
+
+Structured Data
+
+↓
+
+Schema.org
+
+↓
+
+GraphQL
+
+↓
+
+REST
+
+↓
+
+Hydration JSON
+
+↓
+
+Window.__INITIAL_STATE__
+
+↓
+
+NextJS data
+
+↓
+
+Nuxt payload
+
+↓
+
+Astro payload
+
+↓
+
+Pagination
+
+↓
+
+Filters
+
+Now your agent understands the website.
+
+Build a Platform Fingerprinter
+
+This is something almost nobody will think about.
+
+Instead of immediately writing code
+
+First classify
+
+Workday
+
+Greenhouse
+
+Lever
+
+Ashby
+
+SuccessFactors
+
+Oracle
+
+SAP
+
+Eightfold
+
+SmartRecruiters
+
+Teamtailor
+
+Custom
+
+WordPress
+
+NextJS
+
+Static HTML
+
+React SPA
+
+Angular
+
+Vue
+
+Nuxt
+
+Not using hardcoded domains.
+
+Using fingerprints.
+
+Example
+
+Contains
+
+myworkdayjobs
+
+↓
+
+Workday
+
+Confidence 98%
+
+or
+
+greenhouse.io
+
+↓
+
+Greenhouse
+
+or
+
+graphql
+
+↓
+
+Likely Custom React
+Reverse Engineer APIs
+
+This is HUGE.
+
+Most people scrape HTML.
+
+You shouldn't.
+
+Agent should ask
+
+Can I find JSON?
+
+No
+
+↓
+
+Can I find hydration data?
+
+↓
+
+No
+
+↓
+
+Can I inspect XHR?
+
+↓
+
+No
+
+↓
+
+Can I inspect JS bundle?
+
+↓
+
+No
+
+↓
+
+Use Browser
+
+↓
+
+Observe Network
+
+↓
+
+Find API
+
+↓
+
+Done
+
+The generated scraper becomes 20x faster.
+
+Pagination Discovery
+
+This is one thing many people will miss.
+
+Your agent should automatically classify
+
+Offset
+
+Cursor
+
+Infinite Scroll
+
+Page Number
+
+Token
+
+Load More
+
+GraphQL Cursor
+
+REST Offset
+
+Unknown
+
+Then write scraper accordingly.
+
+Validation shouldn't just be
+Script executed successfully
+
+No.
+
+Validate EVERYTHING.
+
+Example
+
+Jobs > 0 ?
+
+Fields Present?
+
+Required Fields?
+
+Location Exists?
+
+Duplicate IDs?
+
+Broken URLs?
+
+Apply URLs valid?
+
+Description Empty?
+
+Pagination Complete?
+
+Only India Jobs?
+
+JSON Valid?
+
+Output Schema Valid?
+
+Every validation produces a score.
+
+What if there are ZERO India jobs?
+
+Most people fail here.
+
+Your validator should distinguish
+
+Case A
+
+No jobs on website
+
+Valid.
+
+Case B
+
+Website has jobs
+
+No India jobs
+
+Valid
+
+Output
+
+[]
+
+Case C
+
+API broken
+
+Invalid
+
+Very different.
+
+Your agent should know.
+
+Add a Confidence Score
+
+Every scraper ships with
+
+Confidence
+
+96%
+
+Reason
+
+API discovered
+
+Pagination verified
+
+27 India jobs
+
+No duplicates
+
+Required fields complete
+
+No runtime errors
+
+That screams production.
+
+Generate Test Cases Automatically
+
+This is something I REALLY recommend.
+
+The agent itself writes tests.
+
+Example
+
+assert output exists
+
+assert json valid
+
+assert every job has title
+
+assert every job has url
+
+assert every job location contains India
+
+assert duplicate ids == 0
+
+assert apply url valid
+
+Then executes them.
+
+Add Self Reflection
+
+After running scraper
+
+Ask LLM
+
+Here is output.
+
+Anything suspicious?
+
+Too few jobs?
+
+Too many?
+
+Empty descriptions?
+
+Repeated jobs?
+
+Missing IDs?
+
+Wrong country?
+
+
+Then repair.
+
+Screenshot Evidence
+
+Save
+
+Homepage
+
+Careers page
+
+API Response
+
+Generated Script
+
+Output
+
+Logs
+
+
+Now every run has evidence.
+
+Auto Platform Knowledge
+
+Not hardcoded.
+
+Keep memory.
+
+Example
+
+Last 500 domains
+
+Platform
+
+Success
+
+Failure
+
+Common API
+
+Common Pagination
+
+Average Validation Score
+
+Future runs improve.
+
+This satisfies their stretch goal.
+
+Cost Report
+
+Nobody will do this.
+
+Produce
+
+LLM Tokens
+
+Search Calls
+
+Browser Time
+
+Execution Time
+
+Repair Count
+
+Retries
+
+Cost
+
+Latency
+
+Looks professional.
+
+Build an Evaluation Dashboard
+
+After each run
+
+Discovery
+
+9/10
+
+API Detection
+
+10/10
+
+Pagination
+
+10/10
+
+Generated Script
+
+9.8/10
+
+Validation
+
+100%
+
+Confidence
+
+97%
+Hard Edge Cases I'd Explicitly Handle
+
+This is where I think your CEO will spend time testing. Make these first-class scenarios, not afterthoughts:
+
+Scenario	Expected behavior
+Company has no careers page	Report "No careers page found", no fabricated script
+Careers page exists but no jobs	Output empty JSONL, mark as successful
+Jobs exist but none in India	Output empty JSONL with reason "No India jobs found"
+India jobs spread across multiple pages	Discover pagination and collect all
+GraphQL backend	Introspect requests and generate GraphQL scraper
+Infinite scroll	Detect termination condition automatically
+Bot protection	Fail gracefully with evidence instead of hanging
+Missing fields	Emit null, never guess
+Duplicate jobs	Deduplicate by stable job_id or URL
+Relative URLs	Normalize to absolute URLs
+Invalid dates	Preserve date_posted_text, set parsed date to null
+API rate limiting	Retry with exponential backoff
+Script fails after generation	Enter repair loop automatically
+The Architecture I'd Present
+                    Domain
+
+                      │
+                      ▼
+
+           Discovery Planner
+
+                      │
+      ┌───────────────┼──────────────┐
+      ▼               ▼              ▼
+
+ Search         Browser Probe     robots/sitemap
+
+      └───────────────┼──────────────┘
+
+                      ▼
+
+          Platform Fingerprinter
+
+                      ▼
+
+         Reverse Engineering Agent
+
+                      ▼
+
+         Scraper Architecture Planner
+
+                      ▼
+
+           Python Code Generator
+
+                      ▼
+
+            Secure Sandboxed Run
+
+                      ▼
+
+            Validation Engine
+
+                      ▼
+
+        Repair Loop (max 3 attempts)
+
+                      ▼
+
+      Confidence + Trace + JSONL Script

@@ -1,0 +1,38 @@
+{
+  "domain": "linear.app",
+  "overall_status": "success_empty",
+  "confidence_pct": 40.5,
+  "careers_url": "https://linear.app/careers",
+  "platform": "custom",
+  "platform_confidence_pct": 0.9,
+  "platform_evidence": [
+    "No known ATS platform signals detected.",
+    "No frontend framework signals detected.",
+    "No hydration JSON blobs found, indicating a lack of common SPA frameworks or known platforms."
+  ],
+  "source_type": "html_ssr",
+  "pagination_scheme": "none",
+  "needs_firecrawl_key": false,
+  "reverse_engineer_evidence": [
+    "Job-detail links are present in the raw HTML of the careers page.",
+    "Individual job-detail pages are server-side rendered with job information in the raw HTML."
+  ],
+  "job_count": 0,
+  "validation_checks": {
+    "json_valid": true,
+    "output_file_exists": true
+  },
+  "validation_reasons": [
+    "zero jobs written"
+  ],
+  "repair_attempts_used": 0,
+  "cost_report": {
+    "llm_calls": 10,
+    "input_tokens": 53139,
+    "output_tokens": 3159,
+    "cost_usd": 0.16444,
+    "tool_calls": 5,
+    "repair_retries": 0,
+    "wall_clock_sec": 299.53
+  }
+}

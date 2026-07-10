@@ -1,0 +1,43 @@
+{
+  "domain": "munichre.com",
+  "overall_status": "success",
+  "confidence_pct": 40.5,
+  "careers_url": "https://careers.munichre.com/en/munichre-search-results",
+  "platform": "radancy",
+  "platform_confidence_pct": 0.9,
+  "platform_evidence": [
+    "The platform signal hits include 'radancy' with specific substrings like 'search-jobs' and 'search-filters__'.",
+    "The markdown preview contains a logo URL that includes 'radancy' in its path: 'https://cdn.radancy.eu/company/3167/v1_0/logos/munichre-logo.webp'."
+  ],
+  "source_type": "html_ssr",
+  "pagination_scheme": "page_number",
+  "needs_firecrawl_key": false,
+  "reverse_engineer_evidence": [
+    "The job detail pages contain the job title, location, and description in raw HTML, confirming SSR.",
+    "The list page requires rendering to access job-detail links.",
+    "Corrected source_type to html_ssr: raw no-JS fetch of https://careers.munichre.com/en/munichre-search-results already contains 15 job links -- rendering not needed.",
+    "India facet id 1269750 activated via ?alrpm= and verified: 5 job links vs 15 unfiltered (facet count 5)"
+  ],
+  "job_count": 4,
+  "validation_checks": {
+    "json_valid": true,
+    "output_file_exists": true,
+    "schema_complete": true,
+    "location_shape_ok": true,
+    "all_jobs_india": true,
+    "no_duplicates": true,
+    "urls_absolute": true,
+    "titles_mostly_present": true
+  },
+  "validation_reasons": [],
+  "repair_attempts_used": 0,
+  "cost_report": {
+    "llm_calls": 16,
+    "input_tokens": 140567,
+    "output_tokens": 4526,
+    "cost_usd": 0.39668,
+    "tool_calls": 16,
+    "repair_retries": 0,
+    "wall_clock_sec": 143.89
+  }
+}

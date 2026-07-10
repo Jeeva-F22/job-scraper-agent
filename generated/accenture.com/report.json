@@ -1,0 +1,40 @@
+{
+  "domain": "accenture.com",
+  "overall_status": "success",
+  "confidence_pct": 40.5,
+  "careers_url": "https://www.accenture.com/in-en/careers/jobsearch",
+  "platform": "workday",
+  "platform_confidence_pct": 0.9,
+  "platform_evidence": [
+    "Detected 'myworkdayjobs.com' in platform signal hits, which is a strong indicator of Workday usage."
+  ],
+  "source_type": "rendered_list_ssr_detail",
+  "pagination_scheme": "unknown",
+  "needs_firecrawl_key": true,
+  "reverse_engineer_evidence": [
+    "Rendered page contains individual job-detail links.",
+    "Attempts to access Workday API endpoints returned 404 errors."
+  ],
+  "job_count": 12,
+  "validation_checks": {
+    "json_valid": true,
+    "output_file_exists": true,
+    "schema_complete": true,
+    "location_shape_ok": true,
+    "all_jobs_india": true,
+    "no_duplicates": true,
+    "urls_absolute": true,
+    "titles_mostly_present": true
+  },
+  "validation_reasons": [],
+  "repair_attempts_used": 0,
+  "cost_report": {
+    "llm_calls": 17,
+    "input_tokens": 197015,
+    "output_tokens": 3681,
+    "cost_usd": 0.52935,
+    "tool_calls": 13,
+    "repair_retries": 0,
+    "wall_clock_sec": 371.37
+  }
+}
